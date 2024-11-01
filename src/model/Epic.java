@@ -1,3 +1,5 @@
+package model;
+
 import java.util.ArrayList;
 
 public class Epic extends Task{
@@ -8,7 +10,7 @@ public class Epic extends Task{
         super(name, description);
     }
 
-    protected void addSubtask(Subtask subtask){
+    public void addSubtask(Subtask subtask){
         subtasks.add(subtask);
     }
 
