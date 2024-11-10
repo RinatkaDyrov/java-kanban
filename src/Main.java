@@ -1,3 +1,4 @@
+import manager.Managers;
 import manager.TaskManager;
 import model.Epic;
 import model.Status;
@@ -7,7 +8,7 @@ import model.Task;
 public class Main {
     public static void main(String[] args) {
 
-        TaskManager manager = new TaskManager();
+        TaskManager manager = Managers.getDefault();
 
         // блок проверки создания объектов
         Task task1 = new Task("First task", "First task desc", Status.NEW);
@@ -57,6 +58,9 @@ public class Main {
         manager.deleteEpicById(epic1.getId());
 
         printAllTasksByManager(manager);
+
+        System.out.println("\n\n");
+        printAllTasks(manager);
     }
 
     public static void printAllTasksByManager(TaskManager manager){
@@ -70,5 +74,29 @@ public class Main {
             epic.getSubtasks().forEach(System.out::println);
         });
         System.out.println("==============================================");
+    }
+
+    private static void printAllTasks(TaskManager manager) {
+        System.out.println("Задачи:");
+        for (Task task : manager.getAllTasks()) {
+            System.out.println(task);
+        }
+        System.out.println("Эпики:");
+        for (Task epic : manager.getAllEpics()) {
+            System.out.println(epic);
+
+            for (Task task : manager.getAllSubtaskByEpic(epic.getId())) {
+                System.out.println("--> " + task);
+            }
+        }
+        System.out.println("Подзадачи:");
+        for (Task subtask : manager.getAllSubtasks()) {
+            System.out.println(subtask);
+        }
+
+        System.out.println("История:");
+        for (Task task : manager.getHistory()) {
+            System.out.println(task);
+        }
     }
 }
