@@ -67,6 +67,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return STR."model.Task{name='\{name}\{'\''}, description='\{description}\{'\''}, status='\{getStatus()}\{'\''}\{'}'}";
+        return String.format("model.Task{name='%s', description='%s', status='%s'}", name, description, getStatus());
     }
 }
