@@ -2,7 +2,7 @@ package model;
 
 import java.util.ArrayList;
 
-public class Epic extends Task{
+public class Epic extends Task {
 
     private final ArrayList<Subtask> subtasks = new ArrayList<>();
 
@@ -10,7 +10,7 @@ public class Epic extends Task{
         super(name, description);
     }
 
-    public void addSubtask(Subtask subtask){
+    public void addSubtask(Subtask subtask) {
         subtasks.add(subtask);
     }
 
@@ -18,19 +18,23 @@ public class Epic extends Task{
         return subtasks;
     }
 
-    public void deleteSubtasks(){
+    public void deleteAllSubtasks() {
         subtasks.clear();
+    }
+
+    public void deleteSubtask(Subtask subtask) {
+        subtasks.remove(subtask);
     }
 
     @Override
     public Status getStatus() {
         int countDone = 0;
         int countNew = 0;
-        for (Subtask subtask : subtasks){
-             if (subtask.getStatus().equals(Status.NEW)){
+        for (Subtask subtask : subtasks) {
+            if (subtask.getStatus().equals(Status.NEW)) {
                 countNew++;
             }
-            if (subtask.getStatus().equals(Status.DONE)){
+            if (subtask.getStatus().equals(Status.DONE)) {
                 countDone++;
             }
         }
