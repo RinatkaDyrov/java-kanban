@@ -42,7 +42,6 @@ public class Main {
         manager.getTaskById(1);
 
 
-
         manager.getSubtaskById(4);
         manager.getSubtaskById(5);
         manager.getSubtaskById(5);
@@ -64,10 +63,9 @@ public class Main {
         printAllTasks(manager);
 
 
-
     }
 
-    public static void printAllTasksByManager(TaskManager manager){
+    public static void printAllTasksByManager(TaskManager manager) {
         System.out.println("Список задач:");
         manager.getAllTasks().forEach(System.out::println);
         System.out.println("Список эпиков:");
