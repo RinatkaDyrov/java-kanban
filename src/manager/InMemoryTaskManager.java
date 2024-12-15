@@ -17,9 +17,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private int taskID = 1;
-    private final static HashMap<Integer, Task> taskList = new HashMap<>();
-    private final static HashMap<Integer, Epic> epicList = new HashMap<>();
-    private final static HashMap<Integer, Subtask> subtaskList = new HashMap<>();
+    private static final HashMap<Integer, Task> taskList = new HashMap<>();
+    private static final HashMap<Integer, Epic> epicList = new HashMap<>();
+    private static final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
 
     @Override
     public ArrayList<Task> getAllTasks() {
