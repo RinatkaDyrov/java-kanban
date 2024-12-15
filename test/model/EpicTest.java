@@ -17,7 +17,7 @@ public class EpicTest {
     Subtask subtask2;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         manager = Managers.getDefault();
         epic = new Epic("Epic 1", "Description of Epic 1");
         manager.createEpic(epic);
@@ -28,7 +28,7 @@ public class EpicTest {
     }
 
     @Test
-    void shouldBeEqualsByArraysOfSubtasks(){
+    void shouldBeEqualsByArraysOfSubtasks() {
         ArrayList<Subtask> subtasks = new ArrayList<>();
         subtasks.add(subtask1);
         subtasks.add(subtask2);
@@ -37,35 +37,35 @@ public class EpicTest {
     }
 
     @Test
-    void shouldReturnTrueByComparingTwoIdenticalEpics(){
+    void shouldReturnTrueByComparingTwoIdenticalEpics() {
         Epic epic1 = epic;
         assertEquals(epic, epic1);
     }
 
     @Test
-    void shouldReturnTrueAndExceptionOfClassTypesWhenSubtaskIsEpic(){
+    void shouldReturnTrueAndExceptionOfClassTypesWhenSubtaskIsEpic() {
         Task epicThatFakedSubtask = new Epic("Epic 1", "Description of Epic 1");
         try {
             manager.createSubtask((Subtask) epicThatFakedSubtask);
             fail();
-        }catch (ClassCastException exception){
+        } catch (ClassCastException exception) {
             assertTrue(true);
         }
     }
 
     @Test
-    void shouldReturnNewStatusForEpicIfAllSubtasksStatusIsNew(){
+    void shouldReturnNewStatusForEpicIfAllSubtasksStatusIsNew() {
         assertEquals(Status.NEW, manager.getEpicById(epic.getId()).getStatus());
     }
 
     @Test
-    void shouldReturnDoneStatusForEpicIfAllSubtasksStatusIsDone(){
+    void shouldReturnDoneStatusForEpicIfAllSubtasksStatusIsDone() {
         manager.getAllSubtaskByEpic(manager.getEpicById(epic.getId()).getId()).forEach(subtask -> subtask.setStatus(Status.DONE));
         assertEquals(Status.DONE, manager.getEpicById(epic.getId()).getStatus());
     }
 
     @Test
-    void shouldReturnInProgressStatusForEpicIfAnySubtaskHaveDifferentStatus(){
+    void shouldReturnInProgressStatusForEpicIfAnySubtaskHaveDifferentStatus() {
         Subtask subtask3 = new Subtask("Subtask 3", "Description subtask 3", Status.DONE, epic.getId());
         manager.createSubtask(subtask3);
         assertEquals(Status.IN_PROGRESS, manager.getEpicById(epic.getId()).getStatus());

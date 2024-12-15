@@ -26,17 +26,17 @@ class SubtaskTest {
     }
 
     @Test
-    void shouldAdd2SubtaskToEpic(){
+    void shouldAdd2SubtaskToEpic() {
         assertEquals(2, manager.getEpicById(epic.getId()).getSubtasks().size());
     }
 
     @Test
-    void shouldReturnTrueAndExceptionOfClassTypesWhenEpicIsSubtask(){
+    void shouldReturnTrueAndExceptionOfClassTypesWhenEpicIsSubtask() {
         Task subtaskThatFakedEpic = new Subtask("Faked subtask", "Description of faked subtask", Status.NEW, epic.getId());
         try {
             manager.createEpic((Epic) subtaskThatFakedEpic);
             fail();
-        }catch (ClassCastException exception){
+        } catch (ClassCastException exception) {
             assertTrue(true);
         }
     }
