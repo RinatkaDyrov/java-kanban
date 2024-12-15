@@ -54,17 +54,15 @@ public class Task {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) return true; // Сравнение по ссылке
+        if (o == null || getClass() != o.getClass()) return false; // Проверка на совпадение классов
         Task task = (Task) o;
-        return Objects.equals(name, task.name) && Objects.equals(description, task.description);
+        return id == task.id; // Уникальность задачи определяется только по id
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(name);
-        result = result * 31 + Objects.hashCode(description);
-        return result;
+        return Objects.hash(id); // Хеш-код задачи основан только на id
     }
 
     @Override

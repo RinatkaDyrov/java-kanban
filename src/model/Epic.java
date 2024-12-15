@@ -18,8 +18,12 @@ public class Epic extends Task{
         return subtasks;
     }
 
-    public void deleteSubtasks(){
+    public void deleteAllSubtasks(){
         subtasks.clear();
+    }
+
+    public void deleteSubtask(Subtask subtask){
+        subtasks.remove(subtask);
     }
 
     @Override
