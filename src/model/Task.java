@@ -57,18 +57,16 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return Objects.equals(name, task.name) && Objects.equals(description, task.description);
+        return id == task.id;
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(name);
-        result = result * 31 + Objects.hashCode(description);
-        return result;
+        return Objects.hash(id);
     }
 
     @Override
     public String toString() {
-        return STR."model.Task{name='\{name}\{'\''}, description='\{description}\{'\''}, status='\{getStatus()}\{'\''}\{'}'}";
+        return String.format("model.Task{name='%s', description='%s', status='%s'}", name, description, getStatus());
     }
 }

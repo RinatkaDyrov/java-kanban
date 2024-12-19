@@ -7,6 +7,8 @@ import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
@@ -32,7 +34,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void shouldCreateAndAddAllTypesOfTasks(){
+    void shouldCreateAndAddAllTypesOfTasks() {
         assertEquals(task, taskManager.getTaskById(task.getId()));
         assertEquals(epic, taskManager.getEpicById(epic.getId()));
         assertEquals(subtask1, taskManager.getSubtaskById(subtask1.getId()));
@@ -40,17 +42,100 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void shouldReturnNotEqualsByComparingUpdatedTaskWithHistoryTask_2(){
-        taskManager.createTask(task);
-
-        Task calledTask = taskManager.getTaskById(task.getId());
-        Task taskFromHistory = taskManager.getHistory().getFirst();
-        assertEquals(calledTask, taskFromHistory);
-
+    void shouldReturnEqualsByComparingUpdatedTaskWithHistoryTask() {
         task.setName("Updated name for task");
         taskManager.updateTask(task);
-        Task updatedTask = taskManager.getTaskById(task.getId());
 
-        assertNotEquals(updatedTask, taskFromHistory);
+        Task updatedTask = taskManager.getTaskById(task.getId());
+        Task taskFromHistory = taskManager.getHistory().getFirst();
+
+        assertEquals(updatedTask, taskFromHistory);
+    }
+
+
+    @Test
+    void shouldAddTaskToHistory() {
+        Task newTask = new Task("New Task", "New task description", Status.NEW);
+        taskManager.createTask(newTask);
+        taskManager.getTaskById(newTask.getId());
+
+        List<Task> history = taskManager.getHistory();
+        assertEquals(1, history.size());
+        assertEquals(newTask, history.getFirst());
+    }
+
+
+    @Test
+    void shouldRemoveTaskFromHistory() {
+        Task task1 = new Task("Task 1", "Description 1", Status.NEW);
+        task1.setId(1);
+        taskManager.createTask(task1);
+        taskManager.getTaskById(task1.getId());
+
+        Task task2 = new Task("Task 2", "Description 2", Status.NEW);
+        task2.setId(2);
+        taskManager.createTask(task2);
+        taskManager.getTaskById(task2.getId());
+
+        taskManager.deleteTaskById(task1.getId());
+
+        List<Task> history = taskManager.getHistory();
+        assertEquals(1, history.size());
+        assertEquals(task2, history.getFirst());
+    }
+
+    @Test
+    void shouldUpdateTaskInHistory() {
+        Task task = new Task("Task 1", "Description 1", Status.NEW);
+        task.setId(1);
+        taskManager.createTask(task);
+        taskManager.getTaskById(task.getId());
+
+        task.setName("Updated Task 1");
+        taskManager.updateTask(task);
+        taskManager.getTaskById(task.getId());
+
+        List<Task> history = taskManager.getHistory();
+        assertEquals(1, history.size());
+        assertEquals("Updated Task 1", history.getFirst().getName());
+    }
+
+    @Test
+    void shouldRemoveSubtaskIdFromEpicWhenSubtaskRemoved() {
+        Subtask subtaskToRemove = subtask1;
+        taskManager.deleteSubtaskById(subtaskToRemove.getId());
+
+        List<Subtask> subtasks = taskManager.getAllSubtaskByEpic(epic.getId());
+        assertFalse(subtasks.contains(subtaskToRemove));
+    }
+
+    @Test
+    void shouldUpdateTaskNameWithSetter() {
+        Task task = new Task("Task 1", "Description 1", Status.NEW);
+        task.setId(1);
+        taskManager.createTask(task);
+        taskManager.getTaskById(task.getId());
+
+        task.setName("Updated Task 1");
+        taskManager.updateTask(task);
+
+        List<Task> history = taskManager.getHistory();
+        assertEquals(1, history.size());
+        assertEquals("Updated Task 1", history.getFirst().getName());
+    }
+
+    @Test
+    void shouldUpdateTaskStatusWithSetter() {
+        Task task = new Task("Task 1", "Description 1", Status.NEW);
+        task.setId(1);
+        taskManager.createTask(task);
+        taskManager.getTaskById(task.getId());
+
+        task.setStatus(Status.IN_PROGRESS);
+        taskManager.updateTask(task);
+
+        List<Task> history = taskManager.getHistory();
+        assertEquals(1, history.size());
+        assertEquals(Status.IN_PROGRESS, history.get(0).getStatus());
     }
 }

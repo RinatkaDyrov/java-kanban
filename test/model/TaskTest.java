@@ -14,7 +14,7 @@ class TaskTest {
     Task task2;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         manager = Managers.getDefault();
         task1 = new Task("Task 1", "Task 1 description", Status.NEW);
         manager.createTask(task1);
@@ -23,7 +23,7 @@ class TaskTest {
     }
 
     @Test
-    void shouldReturnTrueByComparingOfTwoIdenticalTasks(){
+    void shouldReturnTrueByComparingOfTwoIdenticalTasks() {
         assertEquals(manager.getTaskById(task1.getId()), manager.getTaskById(task2.getId()));
     }
 }
