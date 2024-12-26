@@ -47,12 +47,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             while ((line = reader.readLine()) != null) {
                 Task task = fromString(line);
                 if (task != null) {
-                    if (task instanceof Epic) {
-                        createEpic((Epic) task);
-                    } else if (task instanceof Subtask) {
-                        createSubtask((Subtask) task);
-                    } else {
-                        createTask(task);
+                    switch (task.getType()) {
+                        case TASK -> createTask(task);
+                        case EPIC -> createEpic((Epic) task);
+                        case SUBTASK -> createSubtask((Subtask) task);
                     }
                 }
             }
@@ -89,14 +87,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String description = parts[4];
         switch (taskType) {
             case "TASK" -> {
-                return new Task(name, description, Status.valueOf(status));
+                return new Task(TaskType.valueOf(taskType), name, description, Status.valueOf(status));
             }
             case "EPIC" -> {
-                return new Epic(name, description);
+                return new Epic(TaskType.valueOf(taskType), name, description);
             }
             case "SUBTASK" -> {
                 int epicId = Integer.parseInt(parts[5]);
-                return new Subtask(name, description, Status.valueOf(status), epicId);
+                return new Subtask(TaskType.valueOf(taskType), name, description, Status.valueOf(status), epicId);
             }
         }
         return null;
