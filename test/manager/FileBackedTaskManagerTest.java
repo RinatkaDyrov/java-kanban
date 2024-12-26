@@ -4,6 +4,7 @@ import model.Epic;
 import model.Status;
 import model.Subtask;
 import model.Task;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -18,6 +19,17 @@ public class FileBackedTaskManagerTest {
     Epic epic;
     Subtask subtask1;
     Subtask subtask2;
+    File tempFile;
+
+    @BeforeEach
+    void setUp() throws IOException {
+        tempFile = File.createTempFile("testFile", ".csv");
+        tempFile.deleteOnExit();
+        manager = Managers.getFileBackedTaskManager(tempFile);
+        manager.clearAll();     // Добавлена очистка менеджера, так как все тесты выполнялись поотдельности, но при
+        // запуске всех подряд, происходила какая-то утечка. shouldSaveAndLoadEmptyFile и shouldSaveAndLoadEmptyFile
+        // переставали выполняться
+    }
 
     @Test
     void shouldSaveAndLoadEmptyFile() throws IOException {
@@ -35,12 +47,9 @@ public class FileBackedTaskManagerTest {
         assertTrue(emptyManager.getAllSubtasks().isEmpty(), "Subtasks list should be empty");
     }
 
-
     @Test
     void shouldSaveAndLoadData() throws IOException {
         File tempFile = File.createTempFile("dataFile", ".csv");
-        tempFile.deleteOnExit();
-
         FileBackedTaskManager saveManager = Managers.getFileBackedTaskManager(tempFile);
         saveManager.createTask(new Task("New Task", "Description", Status.NEW));
 
@@ -49,6 +58,7 @@ public class FileBackedTaskManagerTest {
         assertEquals(saveManager.getAllTasks(), loadManager.getAllTasks());
         assertEquals(saveManager.getAllEpics(), loadManager.getAllEpics());
         assertEquals(saveManager.getAllSubtasks(), loadManager.getAllSubtasks());
+        tempFile.deleteOnExit();
     }
 
 
