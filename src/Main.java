@@ -1,3 +1,4 @@
+import manager.FileBackedTaskManager;
 import manager.Managers;
 import manager.TaskManager;
 import model.Epic;
@@ -5,14 +6,15 @@ import model.Status;
 import model.Subtask;
 import model.Task;
 
-import java.util.Random;
+import java.io.File;
+import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        File file = File.createTempFile("history", ".csv");
+        file.deleteOnExit();
+        FileBackedTaskManager manager = Managers.getFileBackedTaskManager(file);
 
-        TaskManager manager = Managers.getDefault();
-
-        // блок проверки создания объектов
         Task task1 = new Task("First task", "First task desc", Status.NEW);
         Task task2 = new Task("Second task", "Second task desc", Status.IN_PROGRESS);
         manager.createTask(task1);
@@ -30,8 +32,7 @@ public class Main {
         manager.createSubtask(subtask3);
         printAllTasksByManager(manager);
 
-        //блок проверки изменения объектов
-        Random randomID = new Random();
+        // блок проверки отработки менеджера истории
         manager.getTaskById(1);
         manager.getTaskById(2);
         manager.getTaskById(1);
@@ -40,7 +41,6 @@ public class Main {
         manager.getTaskById(2);
         manager.getTaskById(2);
         manager.getTaskById(1);
-
 
         manager.getSubtaskById(4);
         manager.getSubtaskById(5);
@@ -55,15 +55,8 @@ public class Main {
 
         System.out.println("\n");
         printAllTasks(manager);
-
-        manager.deleteEpicById(epic1.getId());
-
-
-        System.out.println("\n\n");
-        printAllTasks(manager);
-
-
     }
+
 
     public static void printAllTasksByManager(TaskManager manager) {
         System.out.println("Список задач:");
@@ -101,5 +94,4 @@ public class Main {
             System.out.println(task);
         }
     }
-
 }

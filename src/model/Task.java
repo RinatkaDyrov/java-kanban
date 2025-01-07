@@ -5,6 +5,7 @@ import java.util.Objects;
 public class Task {
 
     private int id;
+    private TaskType type;
     private String name;
     private String description;
     private Status status;
@@ -16,6 +17,19 @@ public class Task {
     }
 
     public Task(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public Task(TaskType type, String name, String description, Status status) {
+        this.type = type;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+    }
+
+    public Task(TaskType type, String name, String description) {
+        this.type = type;
         this.name = name;
         this.description = description;
     }
@@ -50,6 +64,14 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public TaskType getType() {
+        return type;
+    }
+
+    public void setType(TaskType type) {
+        this.type = type;
     }
 
     @Override
