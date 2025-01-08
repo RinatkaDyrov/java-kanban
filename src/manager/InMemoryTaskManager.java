@@ -4,16 +4,20 @@ import model.Epic;
 import model.Subtask;
 import model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
     private final HistoryManager historyManager;
+    private TreeSet<Task> sortedByPriorityTasks;
+
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.historyManager = historyManager;
+        sortedByPriorityTasks = new TreeSet<>(Comparator.nullsLast
+                (Comparator.comparing(Task::getStartTime)
+                        .thenComparing(Task::getDuration)
+                        .thenComparing(Task::getId)));
     }
 
     private int taskID = 1;
@@ -147,5 +151,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    public Set<Task> getPrioritizedTasks() {
+        return sortedByPriorityTasks;
     }
 }

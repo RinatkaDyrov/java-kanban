@@ -1,5 +1,8 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -9,29 +12,42 @@ public class Task {
     private String name;
     private String description;
     private Status status;
+    private Duration duration = Duration.ZERO;
+    private LocalDateTime startTime = null;
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
+//    private final DateTimeFormatter durationFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
 
     public Task(String name, String description, Status status) {
+        this.type = TaskType.TASK;
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
     public Task(String name, String description) {
+        this.type = TaskType.TASK;
         this.name = name;
         this.description = description;
     }
 
-    public Task(TaskType type, String name, String description, Status status) {
-        this.type = type;
-        this.name = name;
-        this.description = description;
-        this.status = status;
+    public LocalDateTime getEndTime() {
+        return startTime != null && duration != null ? startTime.plus(duration) : null;
     }
 
-    public Task(TaskType type, String name, String description) {
-        this.type = type;
-        this.name = name;
-        this.description = description;
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     public int getId() {
@@ -89,6 +105,10 @@ public class Task {
 
     @Override
     public String toString() {
-        return String.format("model.Task{name='%s', description='%s', status='%s'}", name, description, getStatus());
+        String startTime = getStartTime() == null ? " " : getStartTime().format(timeFormatter);
+        String duration = getDuration() == Duration.ZERO ? " " : String.valueOf(getDuration().toMinutes());
+
+        return String.format("model.Task{name='%s', description='%s', status='%s', startTime='%s', duration='%s'}",
+                name, description, getStatus(), startTime, duration);
     }
 }

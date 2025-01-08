@@ -3,6 +3,8 @@ package manager;
 import model.*;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
@@ -19,7 +21,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write("id,type,name,status,description,epic");
+            writer.write("id,type,name,status,description,startTime,duration,epic");
             writer.newLine();
 
             for (Task task : getAllTasks()) {
@@ -62,18 +64,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public static String toString(Task task) {
         StringBuilder sb = new StringBuilder();
         sb.append(task.getId()).append(",");
-        if (task instanceof Epic) {
-            sb.append(TaskType.EPIC).append(",");
-        }
-        if (task instanceof Subtask) {
-            sb.append(TaskType.SUBTASK).append(",");
-        } else {
-            sb.append(TaskType.TASK).append(",");
-        }
+        sb.append(task.getType()).append(",");
         sb.append(task.getName()).append(",");
         sb.append(task.getStatus()).append(",");
         sb.append(task.getDescription()).append(",");
-        if (task instanceof Subtask) {
+        if(task.getType() != TaskType.EPIC){
+            sb.append(task.getStartTime() == null ? "" : task.getStartTime()).append(",");
+            sb.append(task.getDuration().toMinutes()).append(",");
+        }
+        if (task.getType() == TaskType.SUBTASK) {
             sb.append(((Subtask) task).getEpicId());
         }
         return sb.toString();
@@ -85,16 +84,24 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String name = parts[2];
         String status = parts[3];
         String description = parts[4];
+        LocalDateTime startTime = parts[5].isEmpty() ? null : LocalDateTime.parse(parts[5]);
+        Duration duration = parts[6].isEmpty() ? Duration.ZERO : Duration.ofMinutes(Long.parseLong(parts[6]));
         switch (taskType) {
             case "TASK" -> {
-                return new Task(TaskType.valueOf(taskType), name, description, Status.valueOf(status));
+                Task task = new Task(name, description, Status.valueOf(status));
+                task.setStartTime(startTime);
+                task.setDuration(duration);
+                return task;
             }
             case "EPIC" -> {
-                return new Epic(TaskType.valueOf(taskType), name, description);
+                return new Epic(name, description);
             }
             case "SUBTASK" -> {
-                int epicId = Integer.parseInt(parts[5]);
-                return new Subtask(TaskType.valueOf(taskType), name, description, Status.valueOf(status), epicId);
+                int epicId = Integer.parseInt(parts[7]);
+                Subtask subtask = new Subtask(name, description, Status.valueOf(status), epicId);
+                subtask.setStartTime(startTime);
+                subtask.setDuration(duration);
+                return subtask;
             }
         }
         return null;
