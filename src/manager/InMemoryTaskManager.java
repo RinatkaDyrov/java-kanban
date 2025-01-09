@@ -4,6 +4,7 @@ import model.Epic;
 import model.Subtask;
 import model.Task;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -84,6 +85,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createTask(Task task) {
+        if (isTaskTimeOverlapping(task)){
+            throw new IllegalArgumentException("Новая задача пересекается с существующей!");
+        }
         taskList.put(taskID, task);
         task.setId(taskID);
         taskID++;
@@ -91,6 +95,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createSubtask(Subtask subtask) {
+        if (isTaskTimeOverlapping(subtask)){
+            throw new IllegalArgumentException("Новая задача пересекается с существующей!");
+        }
         subtaskList.put(taskID, subtask);
         epicList.get(subtask.getEpicId()).addSubtask(subtask);
         subtask.setId(taskID);
@@ -157,4 +164,22 @@ public class InMemoryTaskManager implements TaskManager {
     public Set<Task> getPrioritizedTasks() {
         return sortedByPriorityTasks;
     }
+
+    private boolean isOverlapping(Task task1, Task task2) {
+        if (task1.getStartTime() == null || task2.getStartTime() == null) {
+            return false;
+        }
+        LocalDateTime task1Start = task1.getStartTime();
+        LocalDateTime task1End = task1Start.plus(task1.getDuration());
+        LocalDateTime task2Start = task2.getStartTime();
+        LocalDateTime task2End = task2Start.plus(task2.getDuration());
+        return !(task1End.isBefore(task2Start) || task2End.isBefore(task1Start));
+    }
+
+    private boolean isTaskTimeOverlapping(Task newTask) {
+        return getPrioritizedTasks()
+                .stream()
+                .anyMatch(existingTask -> isOverlapping(newTask, existingTask));
+    }
+
 }
