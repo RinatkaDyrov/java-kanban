@@ -9,7 +9,7 @@ import java.util.*;
 public class InMemoryTaskManager implements TaskManager {
 
     private final HistoryManager historyManager;
-    private TreeSet<Task> sortedByPriorityTasks;
+    private final TreeSet<Task> sortedByPriorityTasks;
 
 
     public InMemoryTaskManager(HistoryManager historyManager) {
@@ -62,24 +62,24 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getTaskById(int id) {
+    public Optional<Task> getTaskById(int id) {
         Task task = taskList.get(id);
         historyManager.add(task);
-        return task;
+        return Optional.ofNullable(task);
     }
 
     @Override
-    public Epic getEpicById(int id) {
+    public Optional<Epic> getEpicById(int id) {
         Epic epic = epicList.get(id);
         historyManager.add(epic);
-        return epic;
+        return Optional.ofNullable(epic);
     }
 
     @Override
-    public Subtask getSubtaskById(int id) {
+    public Optional<Subtask> getSubtaskById(int id) {
         Subtask subtask = subtaskList.get(id);
         historyManager.add(subtask);
-        return subtask;
+        return Optional.ofNullable(subtask);
     }
 
     @Override
@@ -137,7 +137,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteSubtaskById(int id) {
-        Subtask subForDelete = getSubtaskById(id);
+        Subtask subForDelete = getSubtaskById(id).isPresent() ? getSubtaskById(id).get() : null;
+        assert subForDelete != null;
         epicList.get(subForDelete.getEpicId()).deleteSubtask(subForDelete);
         subtaskList.remove(id);
         historyManager.remove(id);

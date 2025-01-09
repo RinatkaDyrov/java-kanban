@@ -32,8 +32,9 @@ public class EpicTest {
         ArrayList<Subtask> subtasks = new ArrayList<>();
         subtasks.add(subtask1);
         subtasks.add(subtask2);
-
-        assertArrayEquals(subtasks.toArray(), manager.getEpicById(epic.getId()).getSubtasks().toArray());
+        Epic epicById = manager.getEpicById(epic.getId()).isPresent() ? manager.getEpicById(epic.getId()).get() : null;
+        assertNotNull(epicById);
+        assertArrayEquals(subtasks.toArray(), epicById.getSubtasks().toArray());
     }
 
     @Test
@@ -55,20 +56,26 @@ public class EpicTest {
 
     @Test
     void shouldReturnNewStatusForEpicIfAllSubtasksStatusIsNew() {
-        assertEquals(Status.NEW, manager.getEpicById(epic.getId()).getStatus());
+        Epic epicById = manager.getEpicById(epic.getId()).isPresent() ? manager.getEpicById(epic.getId()).get() : null;
+        assertNotNull(epicById);
+        assertEquals(Status.NEW, epicById.getStatus());
     }
 
     @Test
     void shouldReturnDoneStatusForEpicIfAllSubtasksStatusIsDone() {
-        manager.getAllSubtaskByEpic(manager.getEpicById(epic.getId()).getId()).forEach(subtask -> subtask.setStatus(Status.DONE));
-        assertEquals(Status.DONE, manager.getEpicById(epic.getId()).getStatus());
+        Epic epicById = manager.getEpicById(epic.getId()).isPresent() ? manager.getEpicById(epic.getId()).get() : null;
+        assertNotNull(epicById);
+        manager.getAllSubtaskByEpic(epicById.getId()).forEach(subtask -> subtask.setStatus(Status.DONE));
+        assertEquals(Status.DONE, epicById.getStatus());
     }
 
     @Test
     void shouldReturnInProgressStatusForEpicIfAnySubtaskHaveDifferentStatus() {
         Subtask subtask3 = new Subtask("Subtask 3", "Description subtask 3", Status.DONE, epic.getId());
         manager.createSubtask(subtask3);
-        assertEquals(Status.IN_PROGRESS, manager.getEpicById(epic.getId()).getStatus());
+        Epic epicById = manager.getEpicById(epic.getId()).isPresent() ? manager.getEpicById(epic.getId()).get() : null;
+        assertNotNull(epicById);
+        assertEquals(Status.IN_PROGRESS, epicById.getStatus());
     }
 
 }

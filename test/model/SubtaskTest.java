@@ -27,7 +27,9 @@ class SubtaskTest {
 
     @Test
     void shouldAdd2SubtaskToEpic() {
-        assertEquals(2, manager.getEpicById(epic.getId()).getSubtasks().size());
+        Epic epicById = manager.getEpicById(epic.getId()).isPresent() ? manager.getEpicById(epic.getId()).get() : null;
+        assertNotNull(epicById);
+        assertEquals(2, epicById.getSubtasks().size());
     }
 
     @Test
