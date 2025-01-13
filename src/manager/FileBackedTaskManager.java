@@ -107,12 +107,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return null;
     }
 
-    public void clearAll() {
-        deleteAllTasks();
-        deleteAllEpics();
-        deleteAllSubtasks();
-    }
-
 
     @Override
     public void createTask(Task task) {

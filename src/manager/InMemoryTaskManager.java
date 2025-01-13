@@ -151,6 +151,12 @@ public class InMemoryTaskManager implements TaskManager {
         historyManager.remove(id);
     }
 
+    public void clearAll() {
+        deleteAllTasks();
+        deleteAllEpics();
+        deleteAllSubtasks();
+    }
+
     @Override
     public ArrayList<Subtask> getAllSubtaskByEpic(int epicId) {
         return epicList.get(epicId).getSubtasks();
