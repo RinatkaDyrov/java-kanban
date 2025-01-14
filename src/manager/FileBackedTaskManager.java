@@ -80,25 +80,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private Task fromString(String value) {
         String[] parts = value.split(",");
-        String taskType = parts[1];
+        TaskType taskType = TaskType.valueOf(parts[1]);
         String name = parts[2];
-        String status = parts[3];
+        Status status = Status.valueOf(parts[3]);
         String description = parts[4];
         LocalDateTime startTime = parts[5].isEmpty() ? null : LocalDateTime.parse(parts[5]);
         Duration duration = parts[6].isEmpty() ? Duration.ZERO : Duration.ofMinutes(Long.parseLong(parts[6]));
         switch (taskType) {
-            case "TASK" -> {
-                Task task = new Task(name, description, Status.valueOf(status));
+            case TASK -> {
+                Task task = new Task(name, description, status);
                 task.setStartTime(startTime);
                 task.setDuration(duration);
                 return task;
             }
-            case "EPIC" -> {
+            case EPIC -> {
                 return new Epic(name, description);
             }
-            case "SUBTASK" -> {
+            case SUBTASK -> {
                 int epicId = Integer.parseInt(parts[7]);
-                Subtask subtask = new Subtask(name, description, Status.valueOf(status), epicId);
+                Subtask subtask = new Subtask(name, description, status, epicId);
                 subtask.setStartTime(startTime);
                 subtask.setDuration(duration);
                 return subtask;
