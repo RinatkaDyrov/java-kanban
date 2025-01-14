@@ -1,7 +1,6 @@
 package manager;
 
 import java.io.File;
-import java.io.IOException;
 
 public class Managers {
 
@@ -16,7 +15,7 @@ public class Managers {
 
     public static FileBackedTaskManager getFileBackedTaskManager(File file) throws RuntimeException {
         HistoryManager historyManager = getDefaultHistory();
-        if (file.exists()){
+        if (file.exists()) {
             return new FileBackedTaskManager(historyManager, file);
         }
         throw new RuntimeException();

@@ -15,7 +15,6 @@ public class Task {
     private Duration duration = Duration.ZERO;
     private LocalDateTime startTime = null;
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
-//    private final DateTimeFormatter durationFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
 
     public Task(String name, String description, Status status) {
         this.type = TaskType.TASK;

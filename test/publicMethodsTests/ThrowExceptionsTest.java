@@ -2,6 +2,9 @@ package publicMethodsTests;
 
 import manager.FileBackedTaskManager;
 import manager.Managers;
+import model.Epic;
+import model.Status;
+import model.Subtask;
 import model.Task;
 import org.junit.jupiter.api.Test;
 
@@ -19,25 +22,25 @@ public class ThrowExceptionsTest {
 
     @Test
     void shouldNotThrowExceptionForInvalidFilePath() throws IOException {
-        File invalidFile = Files.createTempFile("invalidFile","incorrectFormat").toFile();
+        File invalidFile = Files.createTempFile("invalidFile", "incorrectFormat").toFile();
         invalidFile.deleteOnExit();
         assertDoesNotThrow(() -> (Managers.getFileBackedTaskManager(invalidFile)));
     }
 
     @Test
-    void shouldNotThrowExceptionForValidFilePath() {
+    void shouldThrowExceptionForValidFilePath() {
         File validFile = new File("test.csv");
         assertThrows(RuntimeException.class, () -> Managers.getFileBackedTaskManager(validFile));
     }
 
     @Test
-    void shouldThrowExceptionForOverlappingTasks() throws IOException{
+    void shouldThrowExceptionForOverlappingTasks() throws IOException {
         File tempFile = Files.createTempFile("tempFile", "csv").toFile();
         FileBackedTaskManager manager = Managers.getFileBackedTaskManager(tempFile);
         Task task = new Task("Task 1", "desc");
         Task overlappedTask = new Task("Task 2", "desc");
         LocalDateTime start = LocalDateTime.of(2000, Month.JANUARY, 1, 0, 0);
-        LocalDateTime start2 = LocalDateTime.of(2000, Month.JANUARY, 1, 1, 0);
+        LocalDateTime start2 = LocalDateTime.of(2000, Month.JANUARY, 1, 2, 0);
 
         task.setStartTime(start);
         task.setDuration(Duration.ofHours(2));
@@ -45,14 +48,29 @@ public class ThrowExceptionsTest {
         overlappedTask.setDuration(Duration.ofHours(2));
 
         manager.createTask(task);
-        manager.createTask(overlappedTask);
+
         assertThrows(IllegalArgumentException.class, () -> manager.createTask(overlappedTask));
     }
 
     @Test
-    void shouldThrowExceptionForOverlappingSubtasks() throws IOException{
+    void shouldThrowExceptionForOverlappingSubtasks() throws IOException {
         File tempFile = Files.createTempFile("tempFile", "csv").toFile();
         FileBackedTaskManager manager = Managers.getFileBackedTaskManager(tempFile);
-//        Task task = new Task();
+        Epic epic = new Epic("Epic", "desc");
+        manager.createEpic(epic);
+
+        Subtask subtask = new Subtask("Subtask 1", "desc", Status.NEW, epic.getId());
+        Subtask overlappedSubtask = new Subtask("Subtask 2", "desc", Status.NEW, epic.getId());
+        LocalDateTime start = LocalDateTime.of(2000, Month.JANUARY, 1, 0, 0);
+        LocalDateTime start2 = LocalDateTime.of(2000, Month.JANUARY, 1, 2, 0);
+
+        subtask.setStartTime(start);
+        subtask.setDuration(Duration.ofHours(2));
+        overlappedSubtask.setStartTime(start2);
+        overlappedSubtask.setDuration(Duration.ofHours(2));
+
+        manager.createSubtask(subtask);
+
+        assertThrows(IllegalArgumentException.class, () -> manager.createSubtask(overlappedSubtask));
     }
 }

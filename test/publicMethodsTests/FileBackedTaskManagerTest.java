@@ -8,16 +8,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class FileBackedTaskManagerTest extends TaskManagerTest{
+public class FileBackedTaskManagerTest extends TaskManagerTest {
 
     @Override
-    FileBackedTaskManager createTaskManager() throws IOException {
+    FileBackedTaskManager createTaskManager() {
         File tempFile = null;
         try {
             tempFile = Files.createTempFile("tempFile", "csv").toFile();
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        assert tempFile != null;
         FileBackedTaskManager manager = Managers.getFileBackedTaskManager(tempFile);
         manager.clearAll();
         return manager;

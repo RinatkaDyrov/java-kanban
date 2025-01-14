@@ -3,6 +3,7 @@ package manager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
+import model.TaskType;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -11,14 +12,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     private final HistoryManager historyManager;
     private final TreeSet<Task> sortedByPriorityTasks;
-
+    Comparator<Task> comparator = Comparator.nullsLast
+            (Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                    .thenComparing(Task::getDuration, Comparator.nullsLast(Comparator.naturalOrder()))
+                    .thenComparing(Task::getId));
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.historyManager = historyManager;
-        sortedByPriorityTasks = new TreeSet<>(Comparator.nullsLast
-                (Comparator.comparing(Task::getStartTime)
-                        .thenComparing(Task::getDuration)
-                        .thenComparing(Task::getId)));
+        sortedByPriorityTasks = new TreeSet<>(comparator);
     }
 
     private int taskID = 1;
@@ -45,6 +46,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllTasks() {
         taskList.keySet().forEach(historyManager::remove);
         taskList.clear();
+        sortedByPriorityTasks.removeIf(task -> task.getType() == TaskType.TASK);
     }
 
     @Override
@@ -52,6 +54,8 @@ public class InMemoryTaskManager implements TaskManager {
         subtaskList.keySet().forEach(historyManager::remove);
         subtaskList.clear();
         epicList.values().forEach(Epic::deleteAllSubtasks);
+        sortedByPriorityTasks.removeIf(task -> task.getType() == TaskType.SUBTASK);
+
     }
 
     @Override
@@ -60,6 +64,7 @@ public class InMemoryTaskManager implements TaskManager {
         epicList.values().forEach(Epic::deleteAllSubtasks);
         epicList.clear();
         deleteAllSubtasks();
+        sortedByPriorityTasks.removeIf(task -> task.getType() == TaskType.EPIC || task.getType() == TaskType.SUBTASK);
     }
 
     @Override
@@ -85,20 +90,22 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createTask(Task task) {
-        if (isTaskTimeOverlapping(task)){
+        if (isTaskTimeOverlapping(task)) {
             throw new IllegalArgumentException("Новая задача пересекается с существующей!");
         }
         taskList.put(taskID, task);
+        sortedByPriorityTasks.add(task);
         task.setId(taskID);
         taskID++;
     }
 
     @Override
     public void createSubtask(Subtask subtask) {
-        if (isTaskTimeOverlapping(subtask)){
+        if (isTaskTimeOverlapping(subtask)) {
             throw new IllegalArgumentException("Новая задача пересекается с существующей!");
         }
         subtaskList.put(taskID, subtask);
+        sortedByPriorityTasks.add(subtask);
         epicList.get(subtask.getEpicId()).addSubtask(subtask);
         subtask.setId(taskID);
         taskID++;
@@ -107,6 +114,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void createEpic(Epic epic) {
         epicList.put(taskID, epic);
+        sortedByPriorityTasks.add(epic);
         epic.setId(taskID);
         taskID++;
     }
@@ -128,6 +136,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTaskById(int id) {
+        sortedByPriorityTasks.remove(taskList.get(id));
         taskList.remove(id);
         historyManager.remove(id);
     }
@@ -136,8 +145,10 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteEpicById(int id) {
         epicList.get(id).getSubtasks().forEach(subtask -> {
             historyManager.remove(subtask.getId());
+            sortedByPriorityTasks.remove(subtask);
             subtaskList.remove(subtask.getId());
         });
+        sortedByPriorityTasks.remove(epicList.get(id));
         epicList.remove(id);
         historyManager.remove(id);
     }
@@ -146,6 +157,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteSubtaskById(int id) {
         Subtask subForDelete = getSubtaskById(id).isPresent() ? getSubtaskById(id).get() : null;
         assert subForDelete != null;
+        sortedByPriorityTasks.remove(subForDelete);
         epicList.get(subForDelete.getEpicId()).deleteSubtask(subForDelete);
         subtaskList.remove(id);
         historyManager.remove(id);
@@ -155,6 +167,7 @@ public class InMemoryTaskManager implements TaskManager {
         deleteAllTasks();
         deleteAllEpics();
         deleteAllSubtasks();
+        sortedByPriorityTasks.clear();
     }
 
     @Override

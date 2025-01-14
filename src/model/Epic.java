@@ -38,12 +38,12 @@ public class Epic extends Task {
 
     @Override
     public Status getStatus() {
-        if (subtasks.isEmpty()){
+        if (subtasks.isEmpty()) {
             return Status.NEW;
         }
         long countDone = subtasks.stream().filter(subtask -> subtask.getStatus() == Status.DONE).count();
         long countNew = subtasks.stream().filter(subtask -> subtask.getStatus() == Status.NEW).count();
-        if (countNew == subtasks.size()){
+        if (countNew == subtasks.size()) {
             return Status.NEW;
         }
         return countDone == subtasks.size() ? Status.DONE : Status.IN_PROGRESS;

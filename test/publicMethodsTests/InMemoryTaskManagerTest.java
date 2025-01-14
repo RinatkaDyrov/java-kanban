@@ -1,6 +1,5 @@
 package publicMethodsTests;
 
-import manager.InMemoryHistoryManager;
 import manager.InMemoryTaskManager;
 import manager.Managers;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,7 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
     InMemoryTaskManager createTaskManager() {
         InMemoryTaskManager manager = (InMemoryTaskManager) Managers.getDefault();
         manager.clearAll();
-        return manager; // Создаём тестовый экземпляр InMemoryTaskManager
+        return manager;
     }
 
     @Test

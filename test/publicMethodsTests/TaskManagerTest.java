@@ -48,6 +48,4 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         assertEquals("Updated Task", taskManager.getTaskById(task.getId()).get().getName());
     }
-
-    // Добавить тесты для пересечения времени.
 }
