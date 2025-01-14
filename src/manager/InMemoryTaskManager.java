@@ -12,8 +12,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     private final HistoryManager historyManager;
     private final TreeSet<Task> sortedByPriorityTasks;
-    Comparator<Task> comparator = Comparator.nullsLast
-            (Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder()))
+    Comparator<Task> comparator = Comparator.nullsLast(Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder()))
                     .thenComparing(Task::getDuration, Comparator.nullsLast(Comparator.naturalOrder()))
                     .thenComparing(Task::getId));
 
