@@ -35,10 +35,22 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldCreateAndAddAllTypesOfTasks() {
-        assertEquals(task, taskManager.getTaskById(task.getId()));
-        assertEquals(epic, taskManager.getEpicById(epic.getId()));
-        assertEquals(subtask1, taskManager.getSubtaskById(subtask1.getId()));
-        assertEquals(subtask2, taskManager.getSubtaskById(subtask2.getId()));
+        Task taskById = taskManager.getTaskById(task.getId()).isPresent() ?
+                taskManager.getTaskById(task.getId()).get() : null;
+        Epic epicById = taskManager.getEpicById(epic.getId()).isPresent() ?
+                taskManager.getEpicById(epic.getId()).get() : null;
+        Task subById1 = taskManager.getSubtaskById(subtask1.getId()).isPresent() ?
+                taskManager.getSubtaskById(subtask1.getId()).get() : null;
+        Task subById2 = taskManager.getSubtaskById(subtask2.getId()).isPresent() ?
+                taskManager.getSubtaskById(subtask2.getId()).get() : null;
+        assertNotNull(taskById);
+        assertNotNull(epicById);
+        assertNotNull(subById1);
+        assertNotNull(subById2);
+        assertEquals(task, taskById);
+        assertEquals(epic, epicById);
+        assertEquals(subtask1, subById1);
+        assertEquals(subtask2, subById2);
     }
 
     @Test
@@ -46,7 +58,8 @@ class InMemoryTaskManagerTest {
         task.setName("Updated name for task");
         taskManager.updateTask(task);
 
-        Task updatedTask = taskManager.getTaskById(task.getId());
+        Task updatedTask = taskManager.getTaskById(task.getId()).isPresent() ? taskManager.getTaskById(task.getId()).get() : null;
+        assertNotNull(updatedTask);
         Task taskFromHistory = taskManager.getHistory().getFirst();
 
         assertEquals(updatedTask, taskFromHistory);

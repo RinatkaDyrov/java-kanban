@@ -8,6 +8,8 @@ import model.Task;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -26,6 +28,13 @@ public class Main {
         Subtask subtask1 = new Subtask("First subtask e1", "First subtask e1 desc", Status.NEW, epic1.getId());
         Subtask subtask2 = new Subtask("Second subtask e1", "Second subtask e1 desc", Status.NEW, epic1.getId());
         Subtask subtask3 = new Subtask("Third subtask e1", "Third subtask e2 desc", Status.NEW, epic1.getId());
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime1 = now.minusHours(1);
+        subtask1.setStartTime(startTime1);
+        subtask1.setDuration(Duration.ofHours(2));
+        subtask2.setStartTime(LocalDateTime.now());
+        subtask2.setDuration(Duration.ofHours(1).plus(Duration.ofMinutes(10)));
 
         manager.createSubtask(subtask1);
         manager.createSubtask(subtask2);

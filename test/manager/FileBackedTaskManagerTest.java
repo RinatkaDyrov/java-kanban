@@ -66,10 +66,14 @@ public class FileBackedTaskManagerTest {
     @Test
     void shouldCreateAndAddAllTypesOfTasks() throws IOException {
         presetForManager();
-        assertEquals(task, manager.getTaskById(task.getId()));
-        assertEquals(epic, manager.getEpicById(epic.getId()));
-        assertEquals(subtask1, manager.getSubtaskById(subtask1.getId()));
-        assertEquals(subtask2, manager.getSubtaskById(subtask2.getId()));
+        Task taskById = manager.getTaskById(task.getId()).isPresent() ? manager.getTaskById(task.getId()).get() : null;
+        Task epicById = manager.getEpicById(epic.getId()).isPresent() ? manager.getEpicById(epic.getId()).get() : null;
+        Task subtaskById1 = manager.getSubtaskById(subtask1.getId()).isPresent() ? manager.getSubtaskById(subtask1.getId()).get() : null;
+        Task subtaskById2 = manager.getSubtaskById(subtask2.getId()).isPresent() ? manager.getSubtaskById(subtask2.getId()).get() : null;
+        assertEquals(task, taskById);
+        assertEquals(epic, epicById);
+        assertEquals(subtask1, subtaskById1);
+        assertEquals(subtask2, subtaskById2);
     }
 
     @Test
@@ -78,7 +82,7 @@ public class FileBackedTaskManagerTest {
         task.setName("Updated name for task");
         manager.updateTask(task);
 
-        Task updatedTask = manager.getTaskById(task.getId());
+        Task updatedTask = manager.getTaskById(task.getId()).get();
         Task taskFromHistory = manager.getHistory().getFirst();
 
         assertEquals(updatedTask, taskFromHistory);
