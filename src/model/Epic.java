@@ -1,5 +1,6 @@
 package model;
 
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -7,19 +8,18 @@ import java.util.Objects;
 
 public class Epic extends Task {
 
-    private final ArrayList<Subtask> subtasks = new ArrayList<>();
-    private Duration duration = Duration.ZERO;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private final ArrayList<Subtask> subtasks;
 
     public Epic(String name, String description) {
         super(name, description);
         this.setType(TaskType.EPIC);
+        this.subtasks = new ArrayList<>();
     }
 
     public void addSubtask(Subtask subtask) {
         calculateTimeFields();
         subtasks.add(subtask);
+
     }
 
     public ArrayList<Subtask> getSubtasks() {
@@ -50,30 +50,16 @@ public class Epic extends Task {
     }
 
     private void calculateTimeFields() {
-        startTime = subtasks.stream().map(Subtask::getStartTime)
+        LocalDateTime startTime = subtasks.stream().map(Subtask::getStartTime)
                 .filter(Objects::nonNull)
                 .min(LocalDateTime::compareTo)
                 .orElse(null);
+        setStartTime(startTime);
 
-        endTime = subtasks.stream().map(Subtask::getEndTime)
+        LocalDateTime endTime = subtasks.stream().map(Subtask::getEndTime)
                 .filter(Objects::nonNull)
                 .max(LocalDateTime::compareTo)
                 .orElse(null);
-        duration = startTime != null && endTime != null ? Duration.between(startTime, endTime) : Duration.ZERO;
-    }
-
-    @Override
-    public Duration getDuration() {
-        return duration;
-    }
-
-    @Override
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    @Override
-    public LocalDateTime getEndTime() {
-        return endTime;
+        setDuration(startTime != null && endTime != null ? Duration.between(startTime, endTime) : Duration.ZERO);
     }
 }
