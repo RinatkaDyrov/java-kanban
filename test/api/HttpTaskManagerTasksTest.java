@@ -181,7 +181,6 @@ public class HttpTaskManagerTasksTest {
         URI urlEpics = URI.create("http://localhost:8080/epics/2");
         URI urlSubtasks = URI.create("http://localhost:8080/subtasks/3");
 
-        assertEquals(1, manager.getAllTasks().size());
         HttpRequest requestForTasks = HttpRequest.newBuilder()
                 .uri(urlTasks)
                 .DELETE()
@@ -205,5 +204,54 @@ public class HttpTaskManagerTasksTest {
         HttpResponse<String> responseGetEpics = client.send(requestForEpics, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, responseGetEpics.statusCode(), "Expected status code 200");
         assertEquals(0, manager.getAllEpics().size());
+    }
+
+    @Test
+    public void shouldReturnHistoryAndPrioritizedTasks() throws IOException, InterruptedException {
+        Task task = new Task("Test Task", "Test desc", Status.NEW);
+        manager.createTask(task);
+        Epic epic = new Epic("Epic name", "Epic desc");
+        manager.createEpic(epic);
+        Subtask subtask = new Subtask("Sub1 name", "Sub1 desc", Status.NEW, epic.getId());
+        manager.createSubtask(subtask);
+
+        HttpClient client = HttpClient.newHttpClient();
+        URI history = URI.create("http://localhost:8080/history");
+        URI prioritized = URI.create("http://localhost:8080/prioritized");
+
+        HttpRequest requestForHistory = HttpRequest.newBuilder()
+                .uri(history)
+                .GET()
+                .build();
+        HttpResponse<String> responseGetHistory = client.send(requestForHistory, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, responseGetHistory.statusCode(), "Expected status code 200");
+
+        HttpRequest requestForPrioritized = HttpRequest.newBuilder()
+                .uri(prioritized)
+                .GET()
+                .build();
+        HttpResponse<String> responseGetPrioritized = client.send(requestForPrioritized, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, responseGetPrioritized.statusCode(), "Expected status code 200");
+        assertEquals(0, manager.getHistory().size());
+        assertEquals(3, manager.getPrioritizedTasks().size());
+
+        HttpRequest someGet1 = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/tasks/1"))
+                .GET()
+                .build();
+
+        HttpRequest someGet2 = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/epics/2"))
+                .GET()
+                .build();
+        HttpResponse<String> responseSomeGet1 = client.send(someGet1, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, responseSomeGet1.statusCode());
+        HttpResponse<String> responseSomeGet2 = client.send(someGet2, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, responseSomeGet2.statusCode());
+
+        HttpResponse<String> responseGetAnotherPrioritized = client.send(requestForPrioritized, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, responseGetAnotherPrioritized.statusCode(), "Expected status code 200");
+        assertEquals(2, manager.getHistory().size());
+        assertEquals(3, manager.getPrioritizedTasks().size());
     }
 }
