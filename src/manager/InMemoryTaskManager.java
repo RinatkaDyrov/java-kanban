@@ -200,4 +200,8 @@ public class InMemoryTaskManager implements TaskManager {
                 .anyMatch(existingTask -> isOverlapping(newTask, existingTask));
     }
 
+    @Override
+    public boolean isJsonIdValid(int jsonId) {
+        return jsonId == taskID;
+    }
 }

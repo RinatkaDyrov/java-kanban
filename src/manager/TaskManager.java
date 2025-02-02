@@ -7,6 +7,7 @@ import model.Task;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface TaskManager {
 
@@ -49,4 +50,8 @@ public interface TaskManager {
     ArrayList<Subtask> getAllSubtaskByEpic(int id);
 
     List<Task> getHistory();
+
+    Set<Task> getPrioritizedTasks();
+
+    boolean isJsonIdValid(int jsonId);
 }

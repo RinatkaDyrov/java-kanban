@@ -14,7 +14,10 @@ public class Task {
     private Status status;
     private Duration duration = Duration.ZERO;
     private LocalDateTime startTime = null;
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
+
+    public Task() {
+        this.type = TaskType.TASK;
+    }
 
     public Task(String name, String description, Status status) {
         this.type = TaskType.TASK;
@@ -104,7 +107,7 @@ public class Task {
 
     @Override
     public String toString() {
-        String startTime = getStartTime() == null ? " " : getStartTime().format(timeFormatter);
+        String startTime = getStartTime() == null ? " " : getStartTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"));
         String duration = getDuration() == Duration.ZERO ? " " : String.valueOf(getDuration().toMinutes());
 
         return String.format("model.Task{name='%s', description='%s', status='%s', startTime='%s', duration='%s'}",
